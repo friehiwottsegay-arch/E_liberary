@@ -6,11 +6,8 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: |
-      pip install -r backend/requirements.txt
-      python backend/manage.py collectstatic --no-input
-      python backend/manage.py migrate
-    startCommand: gunicorn --chdir backend bookmarket.wsgi:application
+    buildCommand: python build.py
+    startCommand: cd backend && gunicorn dl.wsgi:application
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -25,7 +22,7 @@ services:
           name: elibrary-db
           property: connectionString
       - key: DJANGO_SETTINGS_MODULE
-        value: bookmarket.settings
+        value: dl.settings_production
       - key: OPENAI_API_KEY
         sync: false
       - key: GEMINI_API_KEY

@@ -979,7 +979,7 @@ const ReadPage = () => {
 
   return (
     <div
-      className={`flex h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 ${getAccessibilityClasses()}`}
+      className={`flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 transition-colors duration-500 ${getAccessibilityClasses()}`}
       role="application"
       aria-label="Digital Book Reader"
       aria-describedby="reader-instructions"
@@ -1002,40 +1002,41 @@ const ReadPage = () => {
 
       {/* Accessibility Panel */}
       <AccessibilityPanel />
-      {/* Mobile Sidebar Toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      {/* Enhanced Mobile Sidebar Toggle */}
+      <div className="md:hidden fixed top-6 left-6 z-50">
         <button
           onClick={() => {
             setSidebarOpen(!sidebarOpen);
             announceToScreenReader(sidebarOpen ? 'Sidebar closed' : 'Sidebar opened');
           }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-110"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white p-3 rounded-2xl shadow-2xl transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-white/20"
           aria-label={sidebarOpen ? "Close book navigation sidebar" : "Open book navigation sidebar"}
           aria-expanded={sidebarOpen}
           aria-controls="book-navigation-sidebar"
         >
-          {sidebarOpen ? '←' : '📚'}
+          <span className="text-lg">{sidebarOpen ? '←' : '📚'}</span>
         </button>
       </div>
 
-      {/* Theme Toggle */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Enhanced Theme Toggle */}
+      <div className="fixed top-6 right-6 z-50">
         <button
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-600 dark:text-gray-300 p-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-110"
+          className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 p-3 rounded-2xl shadow-2xl transition-all duration-300 hover:scale-110 border border-gray-200/50 dark:border-gray-700/50"
+          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
         >
-          {theme === 'light' ? '🌙' : '☀️'}
+          <span className="text-lg">{theme === 'light' ? '🌙' : '☀️'}</span>
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* Enhanced Modern Sidebar */}
       <div
         id="book-navigation-sidebar"
         className={`
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:translate-x-0 transition-all duration-300 ease-in-out
-        fixed md:relative w-64 md:w-80 h-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-2xl md:shadow-xl z-40
-        flex flex-col border-r border-gray-200/50 dark:border-gray-700/50
+        md:translate-x-0 transition-all duration-500 ease-out
+        fixed md:relative w-72 md:w-80 h-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl shadow-2xl md:shadow-xl z-40
+        flex flex-col border-r border-gray-200/30 dark:border-gray-700/30
       `}
         role="navigation"
         aria-label="Book navigation sidebar"
@@ -1044,72 +1045,97 @@ const ReadPage = () => {
         <div id="sidebar-instructions" className="sr-only">
           Navigate through books in the current category. Use Tab to move between books.
         </div>
-        {/* Sidebar Header */}
-        <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {currentBook?.subcategory || "Collection"}
-          </h2>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-            {filteredBooks.length} {filteredBooks.length === 1 ? 'book' : 'books'} available
-          </p>
+        {/* Enhanced Sidebar Header */}
+        <div className="p-6 border-b border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+          <div className="flex items-center mb-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+              <span className="text-white text-lg">📚</span>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {currentBook?.subcategory || "Collection"}
+              </h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                {filteredBooks.length} {filteredBooks.length === 1 ? 'book' : 'books'} available
+              </p>
+            </div>
+          </div>
           
-          {/* Reading Progress */}
+          {/* Enhanced Reading Progress */}
           {currentBook && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                <span>Progress</span>
-                <span>{Math.round(readingProgress)}%</span>
+            <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-4 backdrop-blur-sm">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Reading Progress</span>
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{Math.round(readingProgress)}%</span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 shadow-inner">
                 <div 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-2 rounded-full transition-all duration-700 shadow-sm"
                   style={{ width: `${readingProgress}%` }}
                 ></div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <span>Page {currentPage}</span>
+                <span>of {totalPages}</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Books List */}
-        <div className="flex-1 overflow-y-auto p-3">
+        {/* Enhanced Books List */}
+        <div className="flex-1 overflow-y-auto p-4">
           {filteredBooks.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-              <div className="text-4xl mb-3 opacity-50">📖</div>
-              <p className="text-sm">No other books in this category</p>
+            <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+              <div className="w-16 h-16 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl opacity-60">📖</span>
+              </div>
+              <p className="text-sm font-medium">No other books in this category</p>
+              <p className="text-xs text-gray-400 mt-1">Explore other categories to find more books</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {filteredBooks.map((book) => (
                 <div
                   key={book.id}
                   onClick={() => handleBookSelect(book)}
                   className={`
-                    group p-3 rounded-xl border cursor-pointer transition-all duration-300
+                    group p-4 rounded-2xl border cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1
                     ${
                       currentBook?.id === book.id
-                        ? "border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-purple-900/20 shadow-md"
-                        : "border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md"
+                        ? "border-blue-400 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/30 dark:via-indigo-900/20 dark:to-purple-900/30 shadow-xl shadow-blue-200/50 dark:shadow-blue-900/30"
+                        : "border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-800/80 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg hover:bg-white dark:hover:bg-gray-800"
                     }
                   `}
                 >
-                  <h3 className={`font-semibold text-sm ${
-                    currentBook?.id === book.id 
-                      ? "text-blue-700 dark:text-blue-300" 
-                      : "text-gray-800 dark:text-gray-200"
-                  }`}>
-                    {book.title}
-                  </h3>
-                  {book.author && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      by {book.author}
-                    </p>
-                  )}
-                  {currentBook?.id === book.id && (
-                    <div className="flex items-center mt-2">
-                      <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse mr-1"></div>
-                      <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Reading</span>
+                  <div className="flex items-start space-x-3">
+                    <div className={`w-10 h-12 rounded-lg flex-shrink-0 flex items-center justify-center text-lg ${
+                      currentBook?.id === book.id
+                        ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg"
+                        : "bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-600 dark:text-gray-300"
+                    }`}>
+                      📖
                     </div>
-                  )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className={`font-semibold text-sm leading-tight ${
+                        currentBook?.id === book.id 
+                          ? "text-blue-700 dark:text-blue-300" 
+                          : "text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                      }`}>
+                        {book.title}
+                      </h3>
+                      {book.author && (
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate">
+                          by {book.author}
+                        </p>
+                      )}
+                      {currentBook?.id === book.id && (
+                        <div className="flex items-center mt-2">
+                          <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse mr-2"></div>
+                          <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Currently Reading</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1212,79 +1238,86 @@ const ReadPage = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Compact Top Bar */}
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 px-4 py-2">
+        {/* Enhanced Modern Top Bar */}
+        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-b border-gray-200/30 dark:border-gray-700/30 px-6 py-4 shadow-sm">
           <div className="flex items-center justify-between">
-            {/* Book Info - Compact */}
-            <div className="flex-1 min-w-0 mr-4">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">
-                {currentBook?.title || "PDF Viewer"}
-              </h1>
-              {currentBook?.author && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                  by {currentBook.author}
-                </p>
-              )}
+            {/* Enhanced Book Info */}
+            <div className="flex-1 min-w-0 mr-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-sm shadow-lg">
+                  📖
+                </div>
+                <div className="min-w-0">
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate leading-tight">
+                    {currentBook?.title || "PDF Viewer"}
+                  </h1>
+                  {currentBook?.author && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                      by {currentBook.author}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Compact Controls */}
             <div className="flex items-center gap-2">
-              {/* Quick Zoom Controls */}
-              <div className="hidden md:flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              {/* Enhanced Quick Zoom Controls */}
+              <div className="hidden md:flex items-center gap-1 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-1.5 shadow-inner">
                 <button
                   onClick={() => quickZoom(0.5)}
-                  className="text-xs px-2 py-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="text-xs px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-gray-500 transition-all duration-200 hover:shadow-sm font-medium"
                   title="50%"
                 >
                   50%
                 </button>
                 <button
                   onClick={zoomToWidth}
-                  className="text-xs px-2 py-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="text-xs px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-gray-500 transition-all duration-200 hover:shadow-sm font-medium"
                   title="Fit Width"
                 >
                   Width
                 </button>
                 <button
                   onClick={zoomToFit}
-                  className="text-xs px-2 py-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="text-xs px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-gray-500 transition-all duration-200 hover:shadow-sm font-medium"
                   title="Fit Page"
                 >
                   Fit
                 </button>
                 <button
                   onClick={zoomToActual}
-                  className="text-xs px-2 py-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="text-xs px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-gray-500 transition-all duration-200 hover:shadow-sm font-medium"
                   title="Actual Size"
                 >
                   100%
                 </button>
                 <button
                   onClick={() => quickZoom(1.5)}
-                  className="text-xs px-2 py-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="text-xs px-3 py-2 rounded-lg hover:bg-white dark:hover:bg-gray-500 transition-all duration-200 hover:shadow-sm font-medium"
                   title="150%"
                 >
                   150%
                 </button>
               </div>
 
-              {/* Standard Zoom Controls */}
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              {/* Enhanced Standard Zoom Controls */}
+              <div className="flex items-center gap-1 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-1.5 shadow-inner border border-blue-200/50 dark:border-blue-700/50">
                 <button
                   onClick={ZoomOut}
-                  className="p-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="p-2 rounded-lg hover:bg-white dark:hover:bg-blue-800/50 transition-all duration-200 hover:shadow-sm text-blue-600 dark:text-blue-400"
                   title="Zoom Out"
                 >
                   ➖
                 </button>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 px-2 min-w-10 text-center">
+                <span className="text-sm font-bold text-blue-700 dark:text-blue-300 px-3 min-w-12 text-center">
                   <CurrentScale>
                     {(scale) => scale && !isNaN(scale) ? `${Math.round(scale * 100)}%` : '100%'}
                   </CurrentScale>
                 </span>
                 <button
                   onClick={ZoomIn}
-                  className="p-1 rounded hover:bg-white dark:hover:bg-gray-600 transition"
+                  className="p-2 rounded-lg hover:bg-white dark:hover:bg-blue-800/50 transition-all duration-200 hover:shadow-sm text-blue-600 dark:text-blue-400"
                   title="Zoom In"
                 >
                   ➕
@@ -1755,15 +1788,24 @@ const ReadPage = () => {
           </div>
         </div>
 
-        {/* PDF Viewer Container - Maximized */}
-        <div className="flex-1 bg-gray-300 dark:bg-gray-900 p-2 overflow-hidden">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl h-full overflow-hidden relative">
-            {/* PDF Loading Overlay */}
+        {/* Enhanced PDF Viewer Container */}
+        <div className="flex-1 bg-gradient-to-br from-gray-100 via-slate-100 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl h-full overflow-hidden relative border border-gray-200/50 dark:border-gray-700/50">
+            {/* Enhanced PDF Loading Overlay */}
             {pdfLoading && (
-              <div className="absolute inset-0 bg-white dark:bg-gray-800 flex items-center justify-center z-10" role="status" aria-live="polite">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">Loading PDF...</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 flex items-center justify-center z-10 backdrop-blur-sm" role="status" aria-live="polite">
+                <div className="text-center p-8 bg-white/80 dark:bg-gray-800/80 rounded-3xl shadow-2xl backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+                  <div className="relative mb-6">
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 dark:border-blue-800 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 dark:border-blue-400 mx-auto absolute top-0 left-1/2 transform -translate-x-1/2"></div>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-gray-800 dark:text-gray-200 text-lg font-semibold">Loading PDF...</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">Preparing your reading experience</p>
+                  </div>
+                  <div className="mt-4 w-48 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1797,31 +1839,46 @@ const ReadPage = () => {
               </Worker>
             </div>
   
-            {/* Voice Command Status */}
+            {/* Enhanced Voice Command Status */}
             {isListening && (
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                <div className="bg-blue-600 text-white px-4 py-2 rounded-full flex items-center gap-2 voice-listening" role="status">
-                  <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-                  <span className="text-sm">Listening...</span>
+              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl flex items-center gap-3 voice-listening shadow-2xl backdrop-blur-sm border border-blue-400/30" role="status">
+                  <div className="relative">
+                    <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-4 h-4 bg-white rounded-full animate-ping opacity-75"></div>
+                  </div>
+                  <span className="text-sm font-medium">🎤 Listening for commands...</span>
                 </div>
               </div>
             )}
   
-            {/* Reading Status */}
+            {/* Enhanced Reading Status */}
             {isReading && (
-              <div className="absolute top-4 right-4 z-20">
-                <div className="bg-green-600 text-white px-4 py-2 rounded-full flex items-center gap-2 auto-reading" role="status">
-                  <span className="text-sm">Reading Aloud</span>
+              <div className="absolute top-6 right-6 z-20">
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-2xl flex items-center gap-3 auto-reading shadow-2xl backdrop-blur-sm border border-emerald-400/30" role="status">
+                  <div className="relative">
+                    <span className="text-lg animate-bounce">🔊</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">Reading Aloud</span>
+                    <span className="text-xs opacity-90">Page {currentPage} of {totalPages}</span>
+                  </div>
                 </div>
               </div>
             )}
   
-            {/* Recording Status */}
+            {/* Enhanced Recording Status */}
             {isRecording && (
-              <div className="absolute top-4 left-4 z-20">
-                <div className="bg-red-600 text-white px-4 py-2 rounded-full flex items-center gap-2 recording-indicator" role="status">
-                  <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-                  <span className="text-sm">Recording</span>
+              <div className="absolute top-6 left-6 z-20">
+                <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white px-6 py-3 rounded-2xl flex items-center gap-3 recording-indicator shadow-2xl backdrop-blur-sm border border-red-400/30" role="status">
+                  <div className="relative">
+                    <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-4 h-4 bg-white rounded-full animate-ping opacity-75"></div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">🎙️ Recording Note</span>
+                    <span className="text-xs opacity-90">Page {currentPage}</span>
+                  </div>
                 </div>
               </div>
             )}

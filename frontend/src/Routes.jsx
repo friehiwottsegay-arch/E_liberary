@@ -38,6 +38,7 @@ import AudioBookPlayerEnhanced from "./components/pages/AudioBookPlayerEnhanced"
 import AudioBookLibrary from "./components/pages/AudioBookLibrary"
 import AudioBookDetail from "./components/pages/AudioBookDetail"
 import PDFReaderWithAudio from "./components/pages/PDFReaderWithAudio"
+import EnhancedPDFReader from "./components/pages/EnhancedPDFReader"
 
 // Seller Components
 import SellerDashboardNew from "./components/seller/SellerDashboard";
@@ -101,6 +102,7 @@ const AppRoutes = () => (
     <Route path="/audiobook-library" element={<AudioBookLibrary />} />
     <Route path="/audiobook-detail/:id" element={<AudioBookDetail />} />
     <Route path="/pdf-reader/:id" element={<PDFReaderWithAudio />} />
+    <Route path="/enhanced-reader/:id" element={<EnhancedPDFReader />} />
 
     {/* Market Routes */}
     <Route path="/market" element={<Market />} />

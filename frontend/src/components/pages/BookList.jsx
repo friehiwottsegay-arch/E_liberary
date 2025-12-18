@@ -928,7 +928,7 @@ const PaymentModal = () => {
   );
 };
 
-  // Enhanced Wide Grid View Component with Wider Design
+  // Enhanced Modern Grid View Component - 3 Books Per Row
   const BookCardGrid = ({ book, featured = false }) => {
     const isFavorite = favorites.has(book.id);
     const isPurchased = hasPurchased(book.id);
@@ -937,123 +937,138 @@ const PaymentModal = () => {
     return (
       <div
         onClick={() => handleReadBook(book)}
-        className="cursor-pointer rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 border border-gray-300 dark:border-gray-600 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:scale-105 group relative w-full"
+        className="cursor-pointer group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 hover:-translate-y-2 hover:scale-[1.02] w-full"
       >
-        {/* Premium Badge */}
-        {book.is_premium && (
-          <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-lg ${
-            isPurchased 
-              ? 'bg-gradient-to-r from-green-400 to-teal-500 text-white' 
-              : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
-          }`}>
-            <FaCrown className="mr-1" />
-            {isPurchased ? 'PURCHASED' : 'PREMIUM'}
-          </div>
-        )}
+        {/* Premium/Free Badge */}
+        <div className="absolute top-4 left-4 z-20">
+          {book.is_premium && (
+            <div className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center shadow-lg backdrop-blur-sm ${
+              isPurchased 
+                ? 'bg-emerald-500/90 text-white' 
+                : 'bg-gradient-to-r from-amber-400 to-orange-500 text-white'
+            }`}>
+              <FaCrown className="mr-1.5 text-xs" />
+              {isPurchased ? 'OWNED' : 'PREMIUM'}
+            </div>
+          )}
+          {book.is_free && !book.is_premium && (
+            <div className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center shadow-lg backdrop-blur-sm">
+              <FaGem className="mr-1.5 text-xs" />
+              FREE
+            </div>
+          )}
+        </div>
 
-        {/* Free Badge */}
-        {book.is_free && (
-          <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-green-400 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-lg">
-            FREE
-          </div>
-        )}
+        {/* Favorite Button */}
+        <button
+          onClick={(e) => toggleFavorite(book.id, e)}
+          className={`absolute top-4 right-4 z-20 p-2.5 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
+            isFavorite 
+              ? 'bg-red-500/20 text-red-500 shadow-lg' 
+              : 'bg-white/20 text-white hover:bg-white/30'
+          }`}
+        >
+          <FaHeart className="text-sm" />
+        </button>
 
-        <div className={`w-full h-64 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative`}>
+        {/* Book Cover with Enhanced Hover Effects */}
+        <div className="relative h-80 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
           <img
             src={getImageUrl(book.cover_url || book.cover_image)}
             alt={book.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = placeholderImg;
             }}
           />
           
-          {/* Overlay with quick actions */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleReadBook(book);
-              }}
-              className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300 transform hover:scale-110"
-            >
-              <FaBookOpen className="text-xl" />
-            </button>
-            {book.pdf_file && (
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          {/* Action Buttons Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+            <div className="flex space-x-4">
               <button
-                onClick={(e) => handleDownload(book, e)}
-                className="bg-white/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/30 transition-all duration-300 transform hover:scale-110"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReadBook(book);
+                }}
+                className="bg-white/90 backdrop-blur-sm text-gray-800 p-4 rounded-full hover:bg-white transition-all duration-300 transform hover:scale-110 shadow-xl"
+                title="Read Book"
               >
-                <FaDownload className="text-xl" />
+                <FaBookOpen className="text-lg" />
               </button>
-            )}
-            <button
-              onClick={(e) => toggleFavorite(book.id, e)}
-              className={`bg-white/20 backdrop-blur-sm p-3 rounded-full hover:bg-white/30 transition-all duration-300 transform hover:scale-110 ${
-                isFavorite ? 'text-red-500' : 'text-white'
-              }`}
-            >
-              <FaHeart className="text-xl" />
-            </button>
+              {book.pdf_file && (
+                <button
+                  onClick={(e) => handleDownload(book, e)}
+                  className="bg-blue-500/90 backdrop-blur-sm text-white p-4 rounded-full hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 shadow-xl"
+                  title="Download PDF"
+                >
+                  <FaDownload className="text-lg" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Price Tag */}
           {book.is_premium && !isPurchased && (
-            <div className="absolute bottom-3 left-3 bg-black/80 text-white px-3 py-2 rounded-xl backdrop-blur-sm">
-              <div className="text-sm font-bold">${book.price}</div>
-              <div className="text-xs">≈ {priceInETB} ETB</div>
+            <div className="absolute bottom-4 left-4 bg-black/80 text-white px-4 py-2 rounded-2xl backdrop-blur-sm border border-white/20">
+              <div className="text-lg font-bold">${book.price}</div>
+              <div className="text-xs opacity-80">≈ {priceInETB} ETB</div>
             </div>
           )}
 
-          {/* Tags */}
-          {book.tags && book.tags.length > 0 && (
-            <div className="absolute top-3 right-3 flex flex-col space-y-1">
-              {book.tags.slice(0, 2).map((tag, index) => (
-                <span 
-                  key={index}
-                  className="bg-black/70 text-white px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm"
-                >
-                  {tag}
-                </span>
-              ))}
+          {/* Rating Badge */}
+          {book.rating > 0 && (
+            <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-2xl shadow-lg">
+              <div className="flex items-center space-x-1">
+                <FaStar className="text-amber-400 text-sm" />
+                <span className="text-sm font-bold text-gray-800">{book.rating}</span>
+              </div>
             </div>
           )}
         </div>
 
+        {/* Book Information */}
         <div className="p-6">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="font-bold text-gray-800 dark:text-white line-clamp-2 text-lg flex-1 mr-2">
+          {/* Title and Author */}
+          <div className="mb-4">
+            <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 line-clamp-2 leading-tight">
               {book.title || "Untitled"}
             </h3>
-            {book.rating > 0 && (
-              <div className="flex items-center bg-white dark:bg-gray-700 px-2 py-1 rounded-full shadow-sm flex-shrink-0">
-                <FaStar className="text-yellow-400 text-sm" />
-                <span className="text-sm font-bold ml-1 text-gray-700 dark:text-gray-300">
-                  {book.rating}
-                </span>
-              </div>
+            {book.author && (
+              <p className="text-gray-600 dark:text-gray-400 flex items-center text-sm">
+                <FaUser className="mr-2 text-xs" />
+                {book.author}
+              </p>
             )}
           </div>
-          
-          {book.author && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-1 flex items-center">
-              <FaUser className="mr-2" />
-              by {book.author}
-            </p>
-          )}
 
           {/* Categories */}
-       
+          <div className="flex flex-wrap gap-2 mb-4">
+            {book.category_name && (
+              <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full font-medium">
+                {book.category_name}
+              </span>
+            )}
+            {book.sub_category_name && (
+              <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs rounded-full font-medium">
+                {book.sub_category_name}
+              </span>
+            )}
+          </div>
 
+          {/* Description */}
           {book.description && (
-            <p className="text-sm text-gray-500 dark:text-gray-500 line-clamp-2 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4 leading-relaxed">
               {book.description}
             </p>
           )}
 
-          <div className="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-3 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
+          {/* Stats */}
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-6">
+            <div className="flex items-center space-x-4">
               {book.page_count > 0 && (
                 <span className="flex items-center">
                   <FaBook className="mr-1" />
@@ -1066,35 +1081,39 @@ const PaymentModal = () => {
                   {book.views}
                 </span>
               )}
-              {book.downloads > 0 && (
-                <span className="flex items-center">
-                  <FaDownload className="mr-1" />
-                  {book.downloads}
-                </span>
-              )}
             </div>
-            
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleReadBook(book);
-              }}
-              className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex-shrink-0 ${
-                book.is_premium && !isPurchased
-                  ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white'
-                  : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white'
-              }`}
-            >
-              {book.is_premium && !isPurchased ? (
-                <div className="flex items-center space-x-2">
-                  <FaCreditCard className="text-sm" />
-                  <span>Buy Now</span>
-                </div>
-              ) : (
-                'Read Now'
-              )}
-            </button>
+            {book.published_date && (
+              <span className="flex items-center">
+                <FaCalendar className="mr-1" />
+                {new Date(book.published_date).getFullYear()}
+              </span>
+            )}
           </div>
+
+          {/* Action Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReadBook(book);
+            }}
+            className={`w-full py-3 px-4 rounded-2xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] ${
+              book.is_premium && !isPurchased
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white'
+                : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white'
+            }`}
+          >
+            {book.is_premium && !isPurchased ? (
+              <div className="flex items-center justify-center space-x-2">
+                <FaCreditCard className="text-sm" />
+                <span>Purchase ${book.price}</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center space-x-2">
+                <FaBookOpen className="text-sm" />
+                <span>Read Now</span>
+              </div>
+            )}
+          </button>
         </div>
       </div>
     );
@@ -1520,7 +1539,7 @@ const PaymentModal = () => {
   ].filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 text-gray-900 dark:text-gray-100">
       {/* Payment Modal */}
       <PaymentModal />
 
@@ -1658,9 +1677,9 @@ const PaymentModal = () => {
 
           {/* Loading State */}
           {loading ? (
-            <div className={`gap-6 sm:gap-8 md:gap-10 ${
+            <div className={`gap-6 sm:gap-8 ${
               viewMode === "grid" 
-                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
                 : "space-y-6 sm:space-y-8"
             }`}>
               {[...Array(8)].map((_, index) => (
@@ -1766,7 +1785,7 @@ const PaymentModal = () => {
                 ) : (
                   <div className={`${
                     viewMode === "grid" 
-                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10" 
+                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8" 
                       : "space-y-6 sm:space-y-8"
                   }`}>
                     {sortedAndFilteredBooks.map((book) => (

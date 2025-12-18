@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   FaPlay, FaPause, FaStop, FaArrowLeft, FaVolumeUp, FaDownload,
-  FaBook, FaSpinner, FaForward, FaBackward
+  FaBook, FaSpinner, FaForward, FaBackward, FaSearchPlus, FaSearchMinus,
+  FaExpand, FaCompress
 } from 'react-icons/fa';
 import axios from 'axios';
 
@@ -22,6 +23,11 @@ const PDFReaderWithAudio = () => {
   const [speechPitch, setSpeechPitch] = useState(1);
   const [voices, setVoices] = useState([]);
   const [selectedVoice, setSelectedVoice] = useState(null);
+  
+  // Reading UI state
+  const [fontSize, setFontSize] = useState(18);
+  const [lineHeight, setLineHeight] = useState(1.8);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const textRef = useRef(null);
   const utteranceRef = useRef(null);
@@ -156,6 +162,71 @@ const PDFReaderWithAudio = () => {
       setIsPaused(false);
     }
   };
+
+  // Zoom functions
+  const zoomIn = () => {
+    setFontSize(prev => Math.min(prev + 2, 32));
+  };
+
+  const zoomOut = () => {
+    setFontSize(prev => Math.max(prev - 2, 12));
+  };
+
+  const resetZoom = () => {
+    setFontSize(18);
+    setLineHeight(1.8);
+  };
+
+  // Fullscreen toggle
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  // Handle fullscreen change
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case '=':
+          case '+':
+            e.preventDefault();
+            zoomIn();
+            break;
+          case '-':
+            e.preventDefault();
+            zoomOut();
+            break;
+          case '0':
+            e.preventDefault();
+            resetZoom();
+            break;
+          case 'f':
+            e.preventDefault();
+            toggleFullscreen();
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   // Download audio (using backend TTS)
   const downloadAudio = async () => {
@@ -328,6 +399,55 @@ const PDFReaderWithAudio = () => {
                 />
               </div>
 
+              {/* Reading Controls */}
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                  Reading Controls
+                </h4>
+                
+                {/* Zoom Controls */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Font Size</span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={zoomOut}
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Zoom Out (Ctrl + -)"
+                      >
+                        <FaSearchMinus className="text-sm" />
+                      </button>
+                      <span className="text-sm font-medium min-w-12 text-center">
+                        {fontSize}px
+                      </span>
+                      <button
+                        onClick={zoomIn}
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Zoom In (Ctrl + +)"
+                      >
+                        <FaSearchPlus className="text-sm" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={resetZoom}
+                    className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"
+                  >
+                    Reset Zoom
+                  </button>
+
+                  <button
+                    onClick={toggleFullscreen}
+                    className="w-full px-3 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors text-sm flex items-center justify-center"
+                    title="Toggle Fullscreen (Ctrl + F)"
+                  >
+                    {isFullscreen ? <FaCompress className="mr-2" /> : <FaExpand className="mr-2" />}
+                    {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                  </button>
+                </div>
+              </div>
+
               {/* Download Audio */}
               <button
                 onClick={downloadAudio}
@@ -336,6 +456,19 @@ const PDFReaderWithAudio = () => {
                 <FaDownload className="mr-2" />
                 Download Audio
               </button>
+
+              {/* Keyboard Shortcuts */}
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Keyboard Shortcuts
+                </h4>
+                <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                  <div>Ctrl + Plus: Zoom In</div>
+                  <div>Ctrl + Minus: Zoom Out</div>
+                  <div>Ctrl + 0: Reset Zoom</div>
+                  <div>Ctrl + F: Fullscreen</div>
+                </div>
+              </div>
 
               {/* Selected Text Info */}
               {selectedText && (
@@ -367,11 +500,11 @@ const PDFReaderWithAudio = () => {
                 <div
                   ref={textRef}
                   onMouseUp={handleTextSelection}
-                  className="prose prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap select-text"
+                  className="prose prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 whitespace-pre-wrap select-text transition-all duration-300"
                   style={{ 
                     fontFamily: 'Poppins, sans-serif',
-                    fontSize: '1.1rem',
-                    lineHeight: '1.8'
+                    fontSize: `${fontSize}px`,
+                    lineHeight: lineHeight
                   }}
                 >
                   {pdfText}
