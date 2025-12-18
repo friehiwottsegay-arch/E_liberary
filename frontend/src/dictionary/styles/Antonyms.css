@@ -1,0 +1,11 @@
+.antonyms {
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: left;
+  margin-top: 15px;
+}
+
+.antonyms span {
+  font-weight: 700;
+  padding-right: 5px;
+}

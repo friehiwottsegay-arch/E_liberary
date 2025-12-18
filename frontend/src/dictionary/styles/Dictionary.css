@@ -1,0 +1,77 @@
+.Dictionary section {
+  max-width: 900px;
+  margin: 0 auto;
+  margin-bottom: 25px;
+  padding: 20px;
+  border-radius: 30px;
+  outline: 2px solid var(--primary-color);
+  outline-offset: -10px;
+  background-color: var(--background-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .Dictionary section {
+    padding: 30px;
+    border-radius: 20px;
+  }
+}
+
+.Dictionary .search {
+  width: 100%;
+  max-width: 400px;
+  height: 40px;
+  border: 2px solid var(--primary-color);
+  border-radius: 20px;
+  background-color: #fff;
+  padding: 0 15px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.Dictionary .search:focus {
+  border-color: var(--secondary-color);
+  outline: none;
+}
+
+.Dictionary .search-button {
+  height: 40px;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.Dictionary .search-button:hover {
+  background-color: var(--secondary-color);
+}
+
+@media (min-width: 576px) {
+  .Dictionary .search-button {
+    width: auto;
+    margin-top: 0;
+    margin-left: 10px;
+  }
+}
+
+.Dictionary .subheading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  text-transform: capitalize;
+  color: var(--text-color);
+}
+
+.Dictionary .suggestions {
+  margin-top: 15px;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-color);
+  text-align: center;
+}

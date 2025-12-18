@@ -1,0 +1,12 @@
+# Audio Book Generation Requirements
+
+# Text-to-Speech
+gtts==2.5.1
+
+# PDF Processing
+PyPDF2==3.0.1
+
+# Already in main requirements (if not, add these):
+# Django>=4.0
+# djangorestframework>=3.14
+# Pillow>=9.0

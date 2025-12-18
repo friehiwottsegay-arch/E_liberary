@@ -1,0 +1,90 @@
+:root {
+  --background-color1: #e8d595;
+  --background-color2: #e7cba9;
+  --white: #e5e5e5;
+  --accent-color: #8da47e;
+  --accent-color2: #e9bbb5;
+  --shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px;
+  --dark-background-color1: #55624c;
+  --dark-background-color2: #384232;
+  --dark-card-color: #0e100d;
+}
+
+body {
+  text-align: center;
+  background-image: linear-gradient(
+    to bottom right,
+    var(--bg-color1),
+    var(--bg-color2)
+  );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body.light {
+  --bg-color1: var(--background-color1);
+  --bg-color2: var(--background-color2);
+}
+
+body.dark {
+  --bg-color1: var(--dark-background-color1);
+  --bg-color2: var(--dark-background-color2);
+}
+
+footer {
+  font-size: small;
+  margin-bottom: 5rem;
+  color: var(--footer-text-color);
+}
+
+.light footer {
+  --footer-text-color: var(--accent-color);
+}
+
+.dark footer {
+  --footer-text-color: var(--white);
+}
+
+h1 {
+  font-weight: 900;
+  color: var(--accent-color);
+  margin-bottom: 2rem;
+}
+
+main {
+  margin: 0 auto;
+}
+
+.App {
+  font-family: "Lora", serif;
+}
+
+.App .logo {
+  width: 150px;
+  height: 100%;
+  margin: 0;
+  position: relative;
+  top: -2.5rem;
+}
+
+.App a {
+  text-decoration: none;
+  color: black;
+  color: var(--accent-color);
+  font-weight: 900;
+  transition: all 200ms ease-in-out;
+}
+
+.App a:hover {
+  text-decoration: none;
+  color: var(--accent-color2);
+  font-weight: 900;
+}
+
+.App a:focus {
+  text-decoration: none;
+  color: var(--accent-color2);
+  font-weight: 900;
+  outline: none !important;
+}

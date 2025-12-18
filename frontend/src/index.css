@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Paytone+One&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles below */
+
+
+/* Scrollbar customization */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.custom-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.custom-scrollbar::-webkit-scrollbar { display: none; }
+
+.custom-scrollbar-container,
+.scrollable-container {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.custom-scrollbar-container { max-height: 500px; }
+.scrollable-container { max-height: 1000px; }
+.custom-scrollbar-container::-webkit-scrollbar,
+.scrollable-container::-webkit-scrollbar { display: none; }
+
+/* Animations */
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+/* Text shadows */
+.text-shadow { text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+
+/* Star background */
+.star-background {
+  background: radial-gradient(circle at 50% 0%, #000000 0%, #1a1a1a 100%);
+  background-image:
+    repeating-radial-gradient(circle, #ffffff20, #ffffff20 1px, transparent 1px, transparent 100px),
+    radial-gradient(circle at 20% 30%, #ffffff10, transparent 60%),
+    radial-gradient(circle at 80% 70%, #ffffff10, transparent 60%);
+  background-size: cover;
+}
+
+/* Root variables */
+:root {
+  --primary-color: #2e8b57;
+  --secondary-color: #277047;
+  --background-color: #dde9e2;
+  --text-color: #000;
+  --font-family: "Poppins", sans-serif;
+  --font-heading: "Paytone One", sans-serif;
+}
+
+/* Body and links */
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-image: url("/src/assets/images/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+a { text-decoration: none; color: var(--primary-color); }
+a:hover { color: var(--secondary-color); }
+
+/* Responsive container */
+.container { padding: 0 20px; }
+@media (min-width: 768px) { .container { max-width: 750px; margin: 0 auto; } }
+@media (min-width: 1024px) { .container { max-width: 960px; margin: 0 auto; } }
+@media (min-width: 1200px) { .container { max-width: 1140px; margin: 0 auto; } }
+
+
+/* Add these to your global CSS file */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

@@ -1,0 +1,41 @@
+:root {
+  --background-color1: #e8d595;
+  --background-color2: #e7cba9;
+  --white: #e5e5e5;
+  --accent-color: #8da47e;
+  --accent-color2: #e9bbb5;
+  --shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px;
+  --dark-background-color1: #384232;
+  --dark-background-color2: #1c2119;
+  --dark-card-color: #0e100d;
+}
+
+.DarkMode #darkMode {
+  background-color: var(--dark-card-color);
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  transition: all 300ms ease-in-out;
+  margin-top: 2rem;
+}
+
+#darkMode:hover {
+  background-color: var(--white);
+  cursor: pointer;
+}
+
+#darkMode:focus {
+  background-color: var(--background-color2);
+  cursor: pointer;
+  outline: none !important;
+}
+
+#darkMode.clicked {
+  background-color: var(--white);
+}
+
+.fa-moon {
+  color: var(--accent-color);
+  font-size: 2rem;
+}

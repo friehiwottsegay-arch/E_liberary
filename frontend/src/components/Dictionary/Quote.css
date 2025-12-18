@@ -1,0 +1,23 @@
+:root {
+  --background-color1: #e8d595;
+  --background-color2: #e7cba9;
+  --white: #e5e5e5;
+  --accent-color: #8da47e;
+  --accent-color2: #e9bbb5;
+  --shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px;
+}
+
+.Quote {
+  text-align: center;
+}
+
+.Quote .picture {
+  width: 250px;
+}
+
+.Quote .quote {
+  font-style: italic;
+  text-align: center;
+  color: var(--accent-color);
+  font-size: 1.5rem;
+}

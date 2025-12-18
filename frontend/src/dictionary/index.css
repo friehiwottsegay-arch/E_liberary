@@ -1,0 +1,51 @@
+:root {
+  --primary-color: #2e8b57;
+  --secondary-color: #277047;
+  --background-color: #dde9e2;
+  --text-color: #000;
+  --font-family: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-image: url("/src/images/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+.container {
+  padding: 0 20px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 750px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+}

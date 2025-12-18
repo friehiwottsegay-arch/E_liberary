@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/static
+
+# Environment
+.env
+.env.local
+.env.production.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# React
+/frontend/build
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# React Native
+/BookMarketMobile/node_modules/
+/BookMarketMobile/.expo/
+/BookMarketMobile/.expo-shared/
+/BookMarketMobile/dist/
+/BookMarketMobile/npm-debug.*
+/BookMarketMobile/*.jks
+/BookMarketMobile/*.p8
+/BookMarketMobile/*.p12
+/BookMarketMobile/*.key
+/BookMarketMobile/*.mobileprovision
+/BookMarketMobile/*.orig.*
+/BookMarketMobile/web-build/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Misc
+*.bak
+*.tmp
+*.temp

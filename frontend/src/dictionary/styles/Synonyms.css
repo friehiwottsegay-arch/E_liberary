@@ -1,0 +1,11 @@
+.synonyms {
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: left;
+  margin-top: 15px;
+}
+
+.synonyms span {
+  font-weight: 700;
+  padding-right: 5px;
+}
