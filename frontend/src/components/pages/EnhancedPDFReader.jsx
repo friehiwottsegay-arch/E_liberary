@@ -63,7 +63,7 @@ const EnhancedPDFReader = () => {
   const fetchBook = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://127.0.0.1:8000/api/books/${id}/`);
+      const response = await axios.get(`http://127.0.0.1:8000/api/audiobooks/${id}/`);
       setBook(response.data);
       
       if (response.data.pdf_file) {

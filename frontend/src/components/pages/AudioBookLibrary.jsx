@@ -171,12 +171,12 @@ const AudioBookLibrary = () => {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/pdf-reader/${book.id}`);
+                      navigate(`/enhanced-reader/${book.id}`);
                     }}
                     className="flex-1 px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
                   >
                     <FaPlay className="mr-2" />
-                    Read & Listen
+                    Enhanced Reader
                   </button>
                   {book.pdf_file && (
                     <button 

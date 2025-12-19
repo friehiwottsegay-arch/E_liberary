@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   FaPlay, FaPause, FaStop, FaArrowLeft, FaVolumeUp, FaDownload,
   FaBook, FaSpinner, FaForward, FaBackward, FaSearchPlus, FaSearchMinus,
-  FaExpand, FaCompress
+  FaExpand, FaCompress, FaUniversalAccess, FaEye, FaKeyboard, FaMicrophone
 } from 'react-icons/fa';
 import axios from 'axios';
+import './PDFReaderAccessibility.css';
 
 const PDFReaderWithAudio = () => {
   const { id } = useParams();
@@ -29,13 +30,42 @@ const PDFReaderWithAudio = () => {
   const [lineHeight, setLineHeight] = useState(1.8);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
+  // Accessibility state
+  const [accessibilitySettings, setAccessibilitySettings] = useState({
+    screenReaderEnabled: localStorage.getItem('accessibility_screenReader') === 'true',
+    highContrast: localStorage.getItem('accessibility_highContrast') === 'true',
+    largeText: localStorage.getItem('accessibility_largeText') === 'true',
+    focusMode: localStorage.getItem('accessibility_focusMode') === 'true',
+    reducedMotion: localStorage.getItem('accessibility_reducedMotion') === 'true',
+    voiceCommands: localStorage.getItem('accessibility_voiceCommands') === 'true',
+    autoRead: localStorage.getItem('accessibility_autoRead') === 'true',
+  });
+  
+  // Voice recognition state
+  const [recognition, setRecognition] = useState(null);
+  const [isListening, setIsListening] = useState(false);
+  const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
+  
   const textRef = useRef(null);
   const utteranceRef = useRef(null);
+  const announcerRef = useRef(null);
 
   useEffect(() => {
     fetchBook();
     loadVoices();
   }, [id]);
+
+  // Auto-read when content loads and auto-read is enabled
+  useEffect(() => {
+    if (pdfText && accessibilitySettings.autoRead && !isSpeaking) {
+      const timer = setTimeout(() => {
+        speakFullText();
+        announceToScreenReader('Auto-reading started');
+      }, 2000); // 2 second delay
+      
+      return () => clearTimeout(timer);
+    }
+  }, [pdfText, accessibilitySettings.autoRead, isSpeaking]);
 
   useEffect(() => {
     // Load voices when they become available
@@ -55,7 +85,7 @@ const PDFReaderWithAudio = () => {
   const fetchBook = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://127.0.0.1:8000/api/books/${id}/`);
+      const response = await axios.get(`http://127.0.0.1:8000/api/audiobooks/${id}/`);
       setBook(response.data);
       
       // Fetch PDF text content
@@ -163,31 +193,6 @@ const PDFReaderWithAudio = () => {
     }
   };
 
-  // Zoom functions
-  const zoomIn = () => {
-    setFontSize(prev => Math.min(prev + 2, 32));
-  };
-
-  const zoomOut = () => {
-    setFontSize(prev => Math.max(prev - 2, 12));
-  };
-
-  const resetZoom = () => {
-    setFontSize(18);
-    setLineHeight(1.8);
-  };
-
-  // Fullscreen toggle
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
   // Handle fullscreen change
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -198,9 +203,154 @@ const PDFReaderWithAudio = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Keyboard shortcuts
+  // Screen reader announcements
+  const announceToScreenReader = useCallback((message) => {
+    if (accessibilitySettings.screenReaderEnabled && announcerRef.current) {
+      announcerRef.current.textContent = message;
+      setTimeout(() => {
+        if (announcerRef.current) {
+          announcerRef.current.textContent = '';
+        }
+      }, 1000);
+    }
+  }, [accessibilitySettings.screenReaderEnabled]);
+
+  // Update accessibility settings
+  const updateAccessibilitySetting = useCallback((setting, value) => {
+    const newSettings = { ...accessibilitySettings, [setting]: value };
+    setAccessibilitySettings(newSettings);
+    localStorage.setItem(`accessibility_${setting}`, value.toString());
+    
+    // Apply settings to document
+    if (setting === 'highContrast') {
+      document.body.classList.toggle('high-contrast', value);
+    }
+    if (setting === 'largeText') {
+      document.body.classList.toggle('large-text', value);
+    }
+    if (setting === 'focusMode') {
+      document.body.classList.toggle('focus-mode', value);
+    }
+    if (setting === 'reducedMotion') {
+      document.body.classList.toggle('reduced-motion', value);
+    }
+    
+    announceToScreenReader(`${setting} ${value ? 'enabled' : 'disabled'}`);
+  }, [accessibilitySettings, announceToScreenReader]);
+
+  // Voice recognition setup
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = 'en-US';
+
+      recognitionInstance.onresult = (event) => {
+        const command = event.results[0][0].transcript.toLowerCase();
+        handleVoiceCommand(command);
+      };
+
+      recognitionInstance.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionInstance.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        announceToScreenReader('Voice command failed. Please try again.');
+      };
+
+      setRecognition(recognitionInstance);
+    }
+  }, []);
+
+  // Handle voice commands
+  const handleVoiceCommand = useCallback((command) => {
+    announceToScreenReader(`Voice command: ${command}`);
+    
+    if (command.includes('zoom in') || command.includes('bigger')) {
+      zoomIn();
+      announceToScreenReader('Zoomed in');
+    } else if (command.includes('zoom out') || command.includes('smaller')) {
+      zoomOut();
+      announceToScreenReader('Zoomed out');
+    } else if (command.includes('reset zoom')) {
+      resetZoom();
+      announceToScreenReader('Zoom reset');
+    } else if (command.includes('fullscreen') || command.includes('full screen')) {
+      toggleFullscreen();
+      announceToScreenReader(isFullscreen ? 'Exited fullscreen' : 'Entered fullscreen');
+    } else if (command.includes('read') || command.includes('play')) {
+      speakFullText();
+      announceToScreenReader('Started reading');
+    } else if (command.includes('stop') || command.includes('pause')) {
+      stopSpeech();
+      announceToScreenReader('Stopped reading');
+    } else if (command.includes('help')) {
+      announceToScreenReader('Available commands: zoom in, zoom out, reset zoom, fullscreen, read, stop, help');
+    } else {
+      announceToScreenReader('Command not recognized. Say help for available commands.');
+    }
+  }, [isFullscreen, announceToScreenReader]);
+
+  // Start/stop voice recognition
+  const toggleVoiceRecognition = useCallback(() => {
+    if (!recognition) {
+      announceToScreenReader('Voice recognition not supported in this browser');
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+      announceToScreenReader('Voice recognition stopped');
+    } else {
+      recognition.start();
+      setIsListening(true);
+      announceToScreenReader('Voice recognition started. Speak your command.');
+    }
+  }, [recognition, isListening, announceToScreenReader]);
+
+  // Enhanced zoom functions with announcements
+  const zoomIn = useCallback(() => {
+    const newSize = Math.min(fontSize + 2, 32);
+    setFontSize(newSize);
+    announceToScreenReader(`Font size increased to ${newSize} pixels`);
+  }, [fontSize, announceToScreenReader]);
+
+  const zoomOut = useCallback(() => {
+    const newSize = Math.max(fontSize - 2, 12);
+    setFontSize(newSize);
+    announceToScreenReader(`Font size decreased to ${newSize} pixels`);
+  }, [fontSize, announceToScreenReader]);
+
+  const resetZoom = useCallback(() => {
+    setFontSize(18);
+    setLineHeight(1.8);
+    announceToScreenReader('Font size reset to default');
+  }, [announceToScreenReader]);
+
+  // Enhanced fullscreen with announcements
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+      announceToScreenReader('Entered fullscreen mode');
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+      announceToScreenReader('Exited fullscreen mode');
+    }
+  }, [announceToScreenReader]);
+
+  // Keyboard shortcuts with accessibility
   useEffect(() => {
     const handleKeyPress = (e) => {
+      // Skip if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
           case '=':
@@ -221,12 +371,46 @@ const PDFReaderWithAudio = () => {
             toggleFullscreen();
             break;
         }
+      } else {
+        // Accessibility shortcuts (without Ctrl)
+        switch (e.key) {
+          case 'r':
+            if (e.altKey) {
+              e.preventDefault();
+              speakFullText();
+            }
+            break;
+          case 's':
+            if (e.altKey) {
+              e.preventDefault();
+              stopSpeech();
+            }
+            break;
+          case 'v':
+            if (e.altKey) {
+              e.preventDefault();
+              toggleVoiceRecognition();
+            }
+            break;
+          case 'a':
+            if (e.altKey) {
+              e.preventDefault();
+              setShowAccessibilityPanel(!showAccessibilityPanel);
+              announceToScreenReader('Accessibility panel toggled');
+            }
+            break;
+          case 'Escape':
+            if (isFullscreen) {
+              toggleFullscreen();
+            }
+            break;
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, []);
+  }, [zoomIn, zoomOut, resetZoom, toggleFullscreen, showAccessibilityPanel, isFullscreen, toggleVoiceRecognition]);
 
   // Download audio (using backend TTS)
   const downloadAudio = async () => {
@@ -278,7 +462,23 @@ const PDFReaderWithAudio = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8">
+    <div className={`min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 ${
+      accessibilitySettings.highContrast ? 'high-contrast' : ''
+    } ${
+      accessibilitySettings.largeText ? 'large-text' : ''
+    } ${
+      accessibilitySettings.focusMode ? 'focus-mode' : ''
+    } ${
+      accessibilitySettings.reducedMotion ? 'reduced-motion' : ''
+    }`}>
+      {/* Screen Reader Announcer */}
+      <div
+        ref={announcerRef}
+        className="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
+      
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -457,16 +657,131 @@ const PDFReaderWithAudio = () => {
                 Download Audio
               </button>
 
+              {/* Accessibility Controls */}
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <FaUniversalAccess className="inline mr-2 text-blue-500" />
+                    Accessibility
+                  </h4>
+                  <button
+                    onClick={() => setShowAccessibilityPanel(!showAccessibilityPanel)}
+                    className="p-1 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded"
+                    title="Toggle Accessibility Panel (Alt + A)"
+                  >
+                    <FaEye />
+                  </button>
+                </div>
+
+                {/* Voice Recognition */}
+                <button
+                  onClick={toggleVoiceRecognition}
+                  className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center mb-2 ${
+                    isListening
+                      ? 'bg-red-500 text-white hover:bg-red-600 voice-listening'
+                      : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'
+                  }`}
+                  title="Voice Commands (Alt + V)"
+                  aria-pressed={isListening}
+                  aria-label={isListening ? 'Stop voice recognition' : 'Start voice recognition'}
+                >
+                  <FaMicrophone className={`mr-2 ${isListening ? 'animate-pulse' : ''}`} />
+                  {isListening ? 'Stop Listening' : 'Voice Commands'}
+                </button>
+
+                {/* Voice Commands Help */}
+                {isListening && (
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+                    <div className="font-medium mb-1">Say commands like:</div>
+                    <div>"zoom in", "zoom out", "read", "stop", "fullscreen", "help"</div>
+                  </div>
+                )}
+
+                {/* Accessibility Settings Panel */}
+                {showAccessibilityPanel && (
+                  <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-gray-600 dark:text-gray-400">Screen Reader</label>
+                      <input
+                        type="checkbox"
+                        checked={accessibilitySettings.screenReaderEnabled}
+                        onChange={(e) => updateAccessibilitySetting('screenReaderEnabled', e.target.checked)}
+                        className="rounded"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-gray-600 dark:text-gray-400">High Contrast</label>
+                      <input
+                        type="checkbox"
+                        checked={accessibilitySettings.highContrast}
+                        onChange={(e) => updateAccessibilitySetting('highContrast', e.target.checked)}
+                        className="rounded"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-gray-600 dark:text-gray-400">Large Text</label>
+                      <input
+                        type="checkbox"
+                        checked={accessibilitySettings.largeText}
+                        onChange={(e) => updateAccessibilitySetting('largeText', e.target.checked)}
+                        className="rounded"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-gray-600 dark:text-gray-400">Focus Mode</label>
+                      <input
+                        type="checkbox"
+                        checked={accessibilitySettings.focusMode}
+                        onChange={(e) => updateAccessibilitySetting('focusMode', e.target.checked)}
+                        className="rounded"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-gray-600 dark:text-gray-400">Reduced Motion</label>
+                      <input
+                        type="checkbox"
+                        checked={accessibilitySettings.reducedMotion}
+                        onChange={(e) => updateAccessibilitySetting('reducedMotion', e.target.checked)}
+                        className="rounded"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs text-gray-600 dark:text-gray-400">Auto Read</label>
+                      <input
+                        type="checkbox"
+                        checked={accessibilitySettings.autoRead}
+                        onChange={(e) => updateAccessibilitySetting('autoRead', e.target.checked)}
+                        className="rounded"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Keyboard Shortcuts */}
               <div className="border-t pt-4">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  <FaKeyboard className="inline mr-2 text-purple-500" />
                   Keyboard Shortcuts
                 </h4>
                 <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                  <div className="font-medium text-gray-700 dark:text-gray-300">Navigation:</div>
                   <div>Ctrl + Plus: Zoom In</div>
                   <div>Ctrl + Minus: Zoom Out</div>
                   <div>Ctrl + 0: Reset Zoom</div>
                   <div>Ctrl + F: Fullscreen</div>
+                  <div>Escape: Exit Fullscreen</div>
+                  
+                  <div className="font-medium text-gray-700 dark:text-gray-300 pt-2">Accessibility:</div>
+                  <div>Alt + R: Read Text</div>
+                  <div>Alt + S: Stop Reading</div>
+                  <div>Alt + V: Voice Commands</div>
+                  <div>Alt + A: Accessibility Panel</div>
                 </div>
               </div>
 
@@ -500,12 +815,17 @@ const PDFReaderWithAudio = () => {
                 <div
                   ref={textRef}
                   onMouseUp={handleTextSelection}
-                  className="prose prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 whitespace-pre-wrap select-text transition-all duration-300"
+                  className={`prose prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 whitespace-pre-wrap select-text ${
+                    accessibilitySettings.reducedMotion ? '' : 'transition-all duration-300'
+                  }`}
                   style={{ 
                     fontFamily: 'Poppins, sans-serif',
                     fontSize: `${fontSize}px`,
                     lineHeight: lineHeight
                   }}
+                  role="main"
+                  aria-label="Book content"
+                  tabIndex="0"
                 >
                   {pdfText}
                 </div>

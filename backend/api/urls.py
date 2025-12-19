@@ -5,7 +5,7 @@ from .views import (
     QcategoryView, QuestionsViewSet, SignWordListAPIView, SignWordViewSet, SubcategoryViewSet, SubjectViewSet, TeamMemberViewSet, TestimonialViewSet,  UserPurchaseViewSet, UserRegisterView, admin_analytics, admin_bulk_operation, admin_system_health, admin_user_activity, current_user, dashboard_stats, get_questions,
     get_subjects, get_grouped_subjects, UserViewSet, recent_activities
 )
-from .audiobook_views import AudioBookViewSet, get_audiobook_detail, list_audiobooks, save_recording, generate_ai_audio, extract_pdf_text
+from .audiobook_views import AudioBookViewSet, get_audiobook_detail, list_audiobooks, save_recording, generate_ai_audio, extract_pdf_text, accessibility_settings, text_to_speech_stream
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -102,6 +102,10 @@ urlpatterns = [
     path('audiobooks/save-recording/', save_recording, name='save-recording'),
     path('audiobooks/generate-audio/', generate_ai_audio, name='generate-ai-audio'),
     path('audiobooks/extract-text/<int:book_id>/', extract_pdf_text, name='extract-pdf-text'),
+    
+    # Accessibility endpoints
+    path('accessibility/settings/', accessibility_settings, name='accessibility-settings'),
+    path('accessibility/tts-stream/', text_to_speech_stream, name='tts-stream'),
     
     # Include ViewSet router URLs
     path('', include(router.urls)),

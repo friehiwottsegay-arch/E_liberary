@@ -1,0 +1,204 @@
+/* Accessibility CSS for PDF Reader */
+
+/* High Contrast Mode */
+.high-contrast {
+  filter: contrast(150%) brightness(1.2);
+}
+
+.high-contrast .bg-white {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.high-contrast .text-gray-800,
+.high-contrast .text-gray-700,
+.high-contrast .text-gray-600 {
+  color: #ffffff !important;
+}
+
+.high-contrast .bg-gray-100,
+.high-contrast .bg-gray-200 {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+}
+
+.high-contrast button {
+  border: 2px solid #ffffff !important;
+}
+
+/* Large Text Mode */
+.large-text {
+  font-size: 120% !important;
+}
+
+.large-text .text-xs {
+  font-size: 0.875rem !important;
+}
+
+.large-text .text-sm {
+  font-size: 1rem !important;
+}
+
+.large-text .text-base {
+  font-size: 1.25rem !important;
+}
+
+.large-text .text-lg {
+  font-size: 1.5rem !important;
+}
+
+.large-text .text-xl {
+  font-size: 1.875rem !important;
+}
+
+.large-text .text-2xl {
+  font-size: 2.25rem !important;
+}
+
+/* Focus Mode */
+.focus-mode {
+  background: #f8f9fa !important;
+}
+
+.focus-mode * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.focus-mode .bg-gradient-to-br {
+  background: #f8f9fa !important;
+}
+
+.focus-mode .shadow-2xl,
+.focus-mode .shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Reduced Motion */
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.reduced-motion .animate-spin {
+  animation: none !important;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus Indicators */
+button:focus,
+input:focus,
+select:focus {
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+.focus-mode button:focus,
+.focus-mode input:focus,
+.focus-mode select:focus {
+  outline: 4px solid #1d4ed8 !important;
+  outline-offset: 3px !important;
+}
+
+/* Voice Recognition Indicator */
+.voice-listening {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.reduced-motion .voice-listening {
+  animation: none !important;
+  background-color: #ef4444 !important;
+}
+
+/* Accessibility Panel */
+.accessibility-panel {
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.high-contrast .accessibility-panel {
+  border-color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Text Selection Enhancement */
+::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.high-contrast ::selection {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Fullscreen Enhancements */
+.fullscreen-mode {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+.fullscreen-mode .bg-white {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Loading States */
+.loading-accessible {
+  position: relative;
+}
+
+.loading-accessible::after {
+  content: "Loading content, please wait...";
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+
+/* Button States */
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button[aria-pressed="true"] {
+  background-color: #1d4ed8 !important;
+  color: white !important;
+}
+
+/* Responsive Text Scaling */
+@media (max-width: 768px) {
+  .large-text {
+    font-size: 110% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .large-text {
+    font-size: 105% !important;
+  }
+}
